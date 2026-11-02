@@ -3,6 +3,9 @@ CREATE DATABASE ClubMembership;
 USE ClubMembership;
 
 CREATE TABLE Student (
-    
-    Name VARCHAR(50),
+    StudentID INT PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Major VARCHAR(50) NOT NULL,
+    ClassYear VARCHAR(50) NOT NULL
 );
