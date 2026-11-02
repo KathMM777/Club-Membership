@@ -9,3 +9,14 @@ CREATE TABLE Student (
     Major VARCHAR(50) NOT NULL,
     ClassYear VARCHAR(50) NOT NULL
 );
+
+CREATE TABLE Club (
+    ClubID INT PRIMARY KEY, 
+    ClubName VARCHAR(50),
+    Description VARCHAR(255),
+    MeetingDay VARCHAR(15),
+    MeetingLocation VARCHAR(100)
+    );
+
+
+
