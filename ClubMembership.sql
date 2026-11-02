@@ -12,7 +12,7 @@ CREATE TABLE Student (
 
 CREATE TABLE Club (
     ClubID INT PRIMARY KEY, 
-    ClubName VARCHAR(50),
+    ClubName VARCHAR(50) NOT NULL,
     Description VARCHAR(255),
     MeetingDay VARCHAR(15),
     MeetingLocation VARCHAR(100)
