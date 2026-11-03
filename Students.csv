@@ -1,16 +1,16 @@
-StudentID,Name,Email,Major,ClassYear
-1001,Emma Johnson,emma.johnson@university.edu,Computer Science,Senior
-1002,Liam Martinez,liam.martinez@university.edu,Mathematics,Junior
-1003,Olivia Chen,olivia.chen@university.edu,Biology,Sophomore
-1004,Noah Patel,noah.patel@university.edu,Computer Science,Freshman
-1005,Ava Williams,ava.williams@university.edu,Psychology,Senior
-1006,Ethan Brown,ethan.brown@university.edu,Mechanical Engineering,Junior
-1007,Sophia Garcia,sophia.garcia@university.edu,Business Administration,Sophomore
-1008,Mason Kim,mason.kim@university.edu,Physics,Senior
-1009,Isabella Nguyen,isabella.nguyen@university.edu,English,Freshman
-1010,Lucas Davis,lucas.davis@university.edu,Chemistry,Junior
-1011,Mia Rodriguez,mia.rodriguez@university.edu,Graphic Design,Sophomore
-1012,Benjamin Lee,benjamin.lee@university.edu,Economics,Senior
-1013,Charlotte Wilson,charlotte.wilson@university.edu,Mathematics,Freshman
-1014,Henry Thompson,henry.thompson@university.edu,Computer Science,Junior
-1015,Amelia Foster,amelia.foster@university.edu,Biology,Senior
+"StudentID","Name","Email","Major","ClassYear"
+1001,"Emma Johnson","emma.johnson@university.edu","Computer Science","Senior"
+1002,"Liam Martinez","liam.martinez@university.edu","Mathematics","Junior"
+1003,"Olivia Chen","olivia.chen@university.edu","Biology","Sophomore"
+1004,"Noah Patel","noah.patel@university.edu","Computer Science","Freshman"
+1005,"Ava Williams","ava.williams@university.edu","Psychology","Senior"
+1006,"Ethan Brown","ethan.brown@university.edu","Mechanical Engineering","Junior"
+1007,"Sophia Garcia","sophia.garcia@university.edu","Business Administration","Sophomore"
+1008,"Mason Kim","mason.kim@university.edu","Physics","Senior"
+1009,"Isabella Nguyen","isabella.nguyen@university.edu","English","Freshman"
+1010,"Lucas Davis","lucas.davis@university.edu","Chemistry","Junior"
+1011,"Mia Rodriguez","mia.rodriguez@university.edu","Graphic Design","Sophomore"
+1012,"Benjamin Lee","benjamin.lee@university.edu","Economics","Senior"
+1013,"Charlotte Wilson","charlotte.wilson@university.edu","Mathematics","Freshman"
+1014,"Henry Thompson","henry.thompson@university.edu","Computer Science","Junior"
+1015,"Amelia Foster","amelia.foster@university.edu","Biology","Senior"
