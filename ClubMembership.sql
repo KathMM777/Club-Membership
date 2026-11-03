@@ -4,10 +4,12 @@ USE ClubMembership;
 
 CREATE TABLE Student (
     StudentID INT PRIMARY KEY,
-    Name VARCHAR(50) NOT NULL,
-    Email VARCHAR(50) NOT NULL,
-    Major VARCHAR(50) NOT NULL,
-    ClassYear VARCHAR(50) NOT NULL
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL UNIQUE,
+    Major VARCHAR(50),
+    ClassYear VARCHAR(10) NOT NULL,
+    INDEX idx_student_major (Major)
 );
 
 CREATE TABLE Club (
@@ -26,6 +28,5 @@ CREATE TABLE Membership (
     PRIMARY KEY (StudentID, ClubID),
     FOREIGN KEY (StudentID) REFERENCES Student(StudentID),
     FOREIGN KEY (ClubID) REFERENCES Club(ClubID),
-    INDEX idx_membership_club (ClubID),
-    INDEX idx_membership_joindate (JoinDate)
+    INDEX idx_membership_club (ClubID)
 );
