@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS ClubMembership;
 CREATE DATABASE ClubMembership;
 USE ClubMembership;
 
-CREATE TABLE Students (
+CREATE TABLE Student (
     StudentID INT PRIMARY KEY,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE Students (
     INDEX idx_student_major (Major)
 );
 
-CREATE TABLE Clubs (
+CREATE TABLE Club (
     ClubID INT PRIMARY KEY,
     ClubName VARCHAR(50) NOT NULL,
     Description VARCHAR(255),
@@ -20,7 +20,7 @@ CREATE TABLE Clubs (
     MeetingLocation VARCHAR(100)
 );
 
-CREATE TABLE Memberships (
+CREATE TABLE Membership (
     StudentID INT NOT NULL,
     ClubID INT NOT NULL,
     JoinDate DATE NOT NULL,
@@ -39,7 +39,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
 LOAD DATA LOCAL INFILE 'C:/path/to/Clubs.csv'
-INTO TABLE Clubs
+INTO TABLE Club
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
