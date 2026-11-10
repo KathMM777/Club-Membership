@@ -12,8 +12,8 @@ import java.util.List;
  *
  *  - Main menu: pick "Add a Membership" or "Run Queries".
  *  - Insert screen: adds a row to the Membership table (user picks values).
- *  - Query screen: Query 1 (members of a club) and Query 4 (students in every
- *    club that meets on a day), both driven by user input, shown in a table.
+ *  - Query screen: Query 1 (clubs a student belongs to) and Query 4 (students in
+ *    every club that meets on a day), both driven by user input, shown in a table.
  *
  * The MySQL password is typed in a pop-up, so it is never stored in the code.
  */
@@ -199,14 +199,14 @@ public class ClubApp extends JFrame {
     // Query screen: Query 1 and Query 4, results shown in a table
     // =====================================================================
     static class QueryScreen extends JFrame {
-        // Query 1: members of a club. The club name is typed or picked by the user.
+        // Query 1: clubs a student belongs to. The student is picked by the user.
         private static final String QUERY_1 =
-                "SELECT Student.FirstName AS `First Name`, Student.LastName AS `Last Name`, "
+                "SELECT Club.ClubName AS `Club`, Club.MeetingDay AS `Meeting Day`, "
               + "Membership.Position AS `Position`, Membership.JoinDate AS `Join Date` "
               + "FROM Student "
               + "JOIN Membership ON Student.StudentID = Membership.StudentID "
               + "JOIN Club ON Membership.ClubID = Club.ClubID "
-              + "WHERE Club.ClubName = ?";
+              + "WHERE Student.StudentID = ?";
 
         // Query 4 (division): students who belong to EVERY club that meets on the given day.
         // The first EXISTS line stops a day with no clubs from returning every student.
@@ -241,7 +241,7 @@ public class ClubApp extends JFrame {
 
         private void buildMenu() {
             JMenu queryMenu = new JMenu("Queries");
-            JMenuItem q1 = new JMenuItem("1. Members of a club");
+            JMenuItem q1 = new JMenuItem("1. Clubs a student belongs to");
             q1.addActionListener(e -> selectQuery(1));
             JMenuItem q4 = new JMenuItem("4. Students in every club that meets on a day");
             q4.addActionListener(e -> selectQuery(4));
@@ -290,9 +290,9 @@ public class ClubApp extends JFrame {
             showStatus(" ", false);
             try {
                 if (number == 1) {
-                    titleLabel.setText("Query 1: Members of a club");
-                    inputLabel.setText("Club name:");
-                    fillInputBox("SELECT ClubName FROM Club ORDER BY ClubName");
+                    titleLabel.setText("Query 1: Clubs a student belongs to");
+                    inputLabel.setText("Student:");
+                    fillStudentBox();
                 } else {
                     titleLabel.setText("Query 4: Students who belong to every club that meets on a day");
                     inputLabel.setText("Meeting day:");
@@ -301,6 +301,24 @@ public class ClubApp extends JFrame {
             } catch (SQLException ex) {
                 showStatus("Database error: " + ex.getMessage(), true);
             }
+        }
+
+        // Fills the list with "1001 - Emma Johnson" style entries.
+        private void fillStudentBox() throws SQLException {
+            inputBox.removeAllItems();
+            String sql = "SELECT StudentID, FirstName, LastName FROM Student ORDER BY LastName, FirstName";
+            try (Statement s = Db.get().createStatement(); ResultSet r = s.executeQuery(sql)) {
+                while (r.next()) {
+                    inputBox.addItem(r.getInt("StudentID") + " - "
+                            + r.getString("FirstName") + " " + r.getString("LastName"));
+                }
+            }
+        }
+
+        // Reads the student ID from the start of the text ("1001 - Emma Johnson" or just "1001").
+        private static Integer parseStudentId(String text) {
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("^\\d+").matcher(text);
+            return m.find() ? Integer.valueOf(m.group()) : null;
         }
 
         private void fillInputBox(String sql) throws SQLException {
@@ -322,8 +340,15 @@ public class ClubApp extends JFrame {
 
             String sql = (currentQuery == 1) ? QUERY_1 : QUERY_4;
             try (PreparedStatement ps = Db.get().prepareStatement(sql)) {
-                ps.setString(1, value);
-                if (currentQuery == 4) {
+                if (currentQuery == 1) {
+                    Integer studentId = parseStudentId(value);
+                    if (studentId == null) {
+                        showStatus("Pick a student from the list or type a student ID.", true);
+                        return;
+                    }
+                    ps.setInt(1, studentId);
+                } else {
+                    ps.setString(1, value);
                     ps.setString(2, value);
                 }
                 try (ResultSet rs = ps.executeQuery()) {
