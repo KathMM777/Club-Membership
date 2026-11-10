@@ -1,11 +1,11 @@
 USE ClubMembership;
 
--- Query 1: Members of a club (sample club: Coding Club)
-SELECT Student.FirstName, Student.LastName, Membership.Position, Membership.JoinDate
+-- Query 1: Clubs a student belongs to (sample student: Emma Johnson, ID 1001)
+SELECT Club.ClubName, Club.MeetingDay, Membership.Position, Membership.JoinDate
 FROM Student
 JOIN Membership ON Student.StudentID = Membership.StudentID
 JOIN Club ON Membership.ClubID = Club.ClubID
-WHERE Club.ClubName = 'Coding Club';
+WHERE Student.StudentID = 1001;
 
 
 
