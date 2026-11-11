@@ -59,7 +59,7 @@ class MainWindow extends JFrame {
         JMenu queryMenu = new JMenu("Queries");
         // Karen's Queries
         queryMenu.add(menuItem("Members and Officers",
-                () -> showQuery("Members and Members and Officers", Queries::roleCategory)));
+                () -> showQuery("Members and Officers", Queries::roleCategory)));
         queryMenu.add(menuItem("Students and their Clubs by Major", this::askMajorAndShow));
         // Katherine's Queries
         queryMenu.add(menuItem("Students in a Club", this::askClubAndShow));
