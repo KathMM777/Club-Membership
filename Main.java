@@ -384,21 +384,36 @@ class Queries {
                     + "JOIN Club ON Membership.ClubID = Club.ClubID "
                     + "WHERE Student.Major = @major";
 
-    // ----- Katherine's Queries -----
-    // Changed Name to FirstName and LastName
-    private static final String STUDENTS_BY_CLUB_SQL =
-            "SELECT s.StudentID, CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, c.ClubName "
-                    + "FROM Student s "
-                    + "JOIN Membership m ON s.StudentID = m.StudentID "
-                    + "JOIN Club c ON m.ClubID = c.ClubID "
-                    + "WHERE c.ClubID = ?";
+  // ----- Katherine's Queries -----
+// Changed Name to FirstName and LastName
+private static final String STUDENTS_BY_CLUB_SQL =
+        "SELECT s.StudentID, CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, c.ClubName "
+                + "FROM Student s "
+                + "JOIN Membership m ON s.StudentID = m.StudentID "
+                + "JOIN Club c ON m.ClubID = c.ClubID "
+                + "WHERE c.ClubID = ?";
 
-    private static final String COUNT_BY_CLUB_SQL =
-            "SELECT c.ClubID, c.ClubName, COUNT(m.StudentID) AS TotalStudents "
-                    + "FROM Club c "
-                    + "LEFT JOIN Membership m ON c.ClubID = m.ClubID "
-                    + "GROUP BY c.ClubID, c.ClubName "
-                    + "ORDER BY c.ClubID";
+// Katherine: Count students by club using a subquery and CASE
+private static final String COUNT_BY_CLUB_SQL =
+        "SELECT c.ClubID, c.ClubName, "
+                + "COUNT(m.StudentID) AS TotalStudents, "
+                + "CASE "
+                + "WHEN COUNT(m.StudentID) > ( "
+                + "SELECT AVG(ClubCount.TotalStudents) "
+                + "FROM ( "
+                + "SELECT COUNT(m2.StudentID) AS TotalStudents "
+                + "FROM Club c2 "
+                + "LEFT JOIN Membership m2 ON c2.ClubID = m2.ClubID "
+                + "GROUP BY c2.ClubID "
+                + ") AS ClubCount "
+                + ") "
+                + "THEN 'Above average' "
+                + "ELSE 'Average or below' "
+                + "END AS MembershipCategory "
+                + "FROM Club c "
+                + "LEFT JOIN Membership m ON c.ClubID = m.ClubID "
+                + "GROUP BY c.ClubID, c.ClubName "
+                + "ORDER BY c.ClubID";
 
     // ----- Chris's Queries -----
     private static final String CLUBS_BY_STUDENT_SQL =
