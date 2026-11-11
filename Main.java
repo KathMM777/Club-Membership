@@ -12,10 +12,24 @@ public class Main {
 class DBConnection {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/ClubMembership";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "password";   // <-- change this to your password
+    private static String password;    // typed once in a pop-up, so it is never stored in the code
 
     static Connection get() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        if (password == null) {
+            JPasswordField field = new JPasswordField();
+            int choice = JOptionPane.showConfirmDialog(null, field,
+                    "MySQL password for " + DB_USER, JOptionPane.OK_CANCEL_OPTION);
+            if (choice != JOptionPane.OK_OPTION) {
+                throw new SQLException("Login cancelled");
+            }
+            password = new String(field.getPassword());
+        }
+        try {
+            return DriverManager.getConnection(DB_URL, DB_USER, password);
+        } catch (SQLException ex) {
+            password = null;           // wrong password: ask again next time
+            throw ex;
+        }
     }
 }
 
@@ -266,15 +280,83 @@ class ClubInsertDialog extends FormDialog {
     }
 }
 
-/** Chris */
+/** Chris: INSERT one row into Membership. The student and club are picked from lists. */
 class MembershipInsertDialog extends FormDialog {
+    // One dropdown entry: the id we save, and the text the user sees.
+    private record Item(int id, String label) {
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
+    private final JComboBox<Item> studentBox = new JComboBox<>();
+    private final JComboBox<Item> clubBox = new JComboBox<>();
+    private final JTextField joinDateField = new JTextField(java.time.LocalDate.now().toString(), 15);
+    private final JComboBox<String> positionBox = new JComboBox<>(
+            new String[]{"Member", "President", "Vice President", "Treasurer", "Secretary"});
+
     MembershipInsertDialog(JFrame parent) {
         super(parent, "Add Membership");
+        try {
+            loadList(studentBox, "SELECT StudentID, CONCAT(FirstName, ' ', LastName, ' (ID ', StudentID, ')') "
+                    + "FROM Student ORDER BY LastName, FirstName");
+            loadList(clubBox, "SELECT ClubID, ClubName FROM Club ORDER BY ClubName");
+        } catch (SQLException ex) {
+            showError("Database error: " + ex.getMessage());
+        }
+        addRow("Student:", studentBox);
+        addRow("Club:", clubBox);
+        addRow("Join Date (YYYY-MM-DD):", joinDateField);
+        addRow("Position:", positionBox);
+        addSubmitButton("Submit", this::insertMembership);
+    }
 
-        // TODO: add form fields with addRow(...) and finish with addSubmitButton(...)
-        add(new JLabel("Not implemented yet."));
-        setSize(300, 120);
-        setLocationRelativeTo(parent);
+    /** Fills a dropdown from a query that returns (id, label). */
+    private void loadList(JComboBox<Item> box, String sql) throws SQLException {
+        try (Connection conn = DBConnection.get();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                box.addItem(new Item(rs.getInt(1), rs.getString(2)));
+            }
+        }
+    }
+
+    private void insertMembership() {
+        Item student = (Item) studentBox.getSelectedItem();
+        Item club = (Item) clubBox.getSelectedItem();
+        if (student == null || club == null) {
+            showError("Please pick a student and a club.");
+            return;
+        }
+        java.time.LocalDate joinDate;
+        try {
+            joinDate = java.time.LocalDate.parse(required(joinDateField, "Join date"));
+        } catch (java.time.format.DateTimeParseException ex) {
+            showError("Join date must look like 2026-11-04 (year-month-day).");
+            return;
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+            return;
+        }
+
+        String sql = "INSERT INTO Membership (StudentID, ClubID, JoinDate, Position) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBConnection.get();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, student.id());
+            ps.setInt(2, club.id());
+            ps.setDate(3, java.sql.Date.valueOf(joinDate));
+            ps.setString(4, (String) positionBox.getSelectedItem());
+            ps.executeUpdate();
+
+            showInfo("Membership added.");
+            dispose();
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            showError("That student is already a member of that club.");
+        } catch (SQLException ex) {
+            showError("Database error: " + ex.getMessage());
+        }
     }
 }
 
@@ -330,7 +412,8 @@ class Queries {
 // there is NO club on that day that they are NOT a member of.
     private static final String STUDENTS_IN_ALL_CLUBS_ON_DAY_SQL =
             "SELECT Student.FirstName, Student.LastName FROM Student "
-                    + "WHERE NOT EXISTS ( "
+                    + "WHERE EXISTS (SELECT * FROM Club WHERE Club.MeetingDay = ?) "   // day must have at least one club
+                    + "AND NOT EXISTS ( "
                     + "    SELECT * FROM Club "
                     + "    WHERE Club.MeetingDay = ? "
                     + "    AND NOT EXISTS ( "
@@ -397,6 +480,7 @@ class Queries {
         try (Connection conn = DBConnection.get();
              PreparedStatement ps = conn.prepareStatement(STUDENTS_IN_ALL_CLUBS_ON_DAY_SQL)) {
             ps.setString(1, day);                 // text -> setString
+            ps.setString(2, day);                 // the same day fills the second ?
             try (ResultSet rs = ps.executeQuery()) {
                 return toTableModel(rs);
             }
