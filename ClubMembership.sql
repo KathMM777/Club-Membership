@@ -31,7 +31,8 @@ CREATE TABLE Membership (
     INDEX idx_membership_club (ClubID)
 );
 
-LOAD DATA LOCAL INFILE 'C:/path/to/Student.csv'
+-- Load the CSV files. Change C:/path/to/ to the folder that holds the CSV files on your computer.
+LOAD DATA LOCAL INFILE 'C:/path/to/Students.csv'
 INTO TABLE Student
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
@@ -45,7 +46,7 @@ OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-LOAD DATA LOCAL INFILE 'C:/path/to/Membership.csv'
+LOAD DATA LOCAL INFILE 'C:/path/to/Memberships.csv'
 INTO TABLE Membership
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
