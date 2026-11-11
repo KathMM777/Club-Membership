@@ -366,15 +366,15 @@ class Queries {
     // ----- Karen's queries -----
     private static final String ROLE_CATEGORY_SQL =
             "SELECT Student.FirstName, Student.LastName, Club.ClubName, Membership.Position, "
-                    + "CASE Membership.Position "
-                    + "  WHEN 'President' THEN 'Leadership' "
-                    + "  WHEN 'Member' THEN 'General Member' "
+                    + "CASE "
+                    + "  WHEN Membership.Position IN ('President', 'Vice President', 'Treasurer', 'Secretary') "
+                    + "       THEN 'Officer' "
+                    + "  WHEN Membership.Position = 'Member' THEN 'General Member' "
                     + "  ELSE 'Other' "
                     + "END AS RoleCategory "
                     + "FROM Student "
                     + "JOIN Membership ON Student.StudentID = Membership.StudentID "
-                    + "JOIN Club ON Membership.ClubID = Club.ClubID "
-                    + "WHERE Membership.Position IN ('President', 'Member')";
+                    + "JOIN Club ON Membership.ClubID = Club.ClubID";
 
     private static final String BY_MAJOR_SQL =
             "SELECT Student.FirstName, Student.LastName, Student.Major, "
