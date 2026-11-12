@@ -388,11 +388,13 @@ class Queries {
 // Changed Name to FirstName and LastName
 
 private static final String STUDENTS_BY_CLUB_SQL =
-        "SELECT s.StudentID, s.Name AS StudentName, c.ClubName "
-                + "FROM Student s "
-                + "JOIN Membership m ON s.StudentID = m.StudentID "
-                + "JOIN Club c ON m.ClubID = c.ClubID "
-                + "WHERE c.ClubID = ?";
+        "SELECT s.StudentID, "
+        + "CONCAT(s.FirstName, ' ', s.LastName) AS StudentName, "
+        + "c.ClubName "
+        + "FROM Student s "
+        + "JOIN Membership m ON s.StudentID = m.StudentID "
+        + "JOIN Club c ON m.ClubID = c.ClubID "
+        + "WHERE c.ClubID = ?";
 
 
 // Katherine: Count students by club using a subquery and CASE
